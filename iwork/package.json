@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "build-sw": "tsc -p tsconfig.worker.json && cp public/service-worker.js dist/"
   },
   "dependencies": {
     "@emotion/styled": "^11.14.0",
