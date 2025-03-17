@@ -3,7 +3,13 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Button, Container, Typography, Box, Alert } from "@mui/material";
 import styles from "./index.module.scss";
-import TextField from "../../common/TestField";
+import TextField from "../TextField";
+import {
+  SIGNUP_FIELDS,
+  ALERT_MESSAGES,
+  BUTTON_TEXT,
+  CONSOLE_MESSAGES,
+} from "../../constants";
 
 interface SignUpFormData {
   username: string;
@@ -20,11 +26,11 @@ const SignUp: React.FC = () => {
   } = useForm<SignUpFormData>();
   const [error, setError] = React.useState<string | null>(null);
 
-  const onSubmit: SubmitHandler<SignUpFormData> = (data) => {
+  const onSubmit: SubmitHandler<SignUpFormData> = async (data) => {
     setError(null);
 
     if (data.password !== data.confirmPassword) {
-      setError("Passwords do not match");
+      setError(ALERT_MESSAGES.PASSWORD_MISMATCH);
       return;
     }
 
@@ -32,7 +38,7 @@ const SignUp: React.FC = () => {
       // Check if the username already exists in localStorage
       const storedUsername = localStorage.getItem("username");
       if (storedUsername === data.username) {
-        setError("You have already signed up. Please sign in.");
+        setError(ALERT_MESSAGES.ALREADY_SIGNED_UP);
         return;
       }
 
@@ -40,59 +46,30 @@ const SignUp: React.FC = () => {
       localStorage.setItem("username", data.username);
       localStorage.setItem("password", data.password);
 
-      console.log("Sign up successful", data);
+      console.log(CONSOLE_MESSAGES.SIGNUP_SUCCESS, data);
       // Navigate to signIn page
       navigate("/signIn");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setError(error.message || "Something went wrong. Please try again.");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setError(
+          error.response?.data?.message || ALERT_MESSAGES.SIGNUP_FAILED
+        );
       } else {
-        setError("An unknown error occurred.");
+        setError(ALERT_MESSAGES.UNKNOWN_ERROR);
       }
     }
   };
 
-  // Define the form fields configuration
-  const fields = [
-    {
-      id: "username",
-      label: "Username",
-      name: "username",
-      type: "text",
-      required: true,
-      validationRules: { required: "Username is required" },
-    },
-    {
-      id: "password",
-      label: "Password",
-      name: "password",
-      type: "password",
-      required: true,
-      validationRules: {
-        required: "Password is required",
-        minLength: {
-          value: 3,
-          message: "Password must be at least 3 characters",
-        },
-      },
-    },
-    {
-      id: "confirmPassword",
-      label: "Confirm Password",
-      name: "confirmPassword",
-      type: "password",
-      required: true,
-      validationRules: {
-        required: "Confirm Password is required",
-      },
-    },
-  ];
-
   return (
     <Container maxWidth="sm" className={styles.container}>
       <Box mt={5}>
-        <Typography variant="h4" component="h1" gutterBottom className={styles.typography}>
-          Sign Up
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          className={styles.typography}
+        >
+          {BUTTON_TEXT.SIGNUP_TITLE}
         </Typography>
 
         {/* Display general error message */}
@@ -100,7 +77,7 @@ const SignUp: React.FC = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           {/* Render form fields dynamically */}
-          {fields.map((field) => (
+          {SIGNUP_FIELDS.map((field) => (
             <div key={field.id}>
               <TextField
                 id={field.id}
@@ -113,14 +90,14 @@ const SignUp: React.FC = () => {
                 required={field.required}
                 disabled={isSubmitting}
                 aria-label={field.label}
-                className={styles.textField}  // Apply the same style here
+                className={styles.textField} // Apply the same style here
                 error={!!errors[field.name]}
                 helperText={errors[field.name]?.message}
                 validationRules={field.validationRules}
               />
             </div>
           ))}
-          
+
           {/* Submit button */}
           <Box mt={2} className={styles.buttonContainer}>
             <Button
@@ -129,9 +106,11 @@ const SignUp: React.FC = () => {
               color="primary"
               fullWidth
               disabled={isSubmitting}
-              className={`${styles.button} ${isSubmitting ? styles.disabled : styles.primary}`}
+              className={`${styles.button} ${
+                isSubmitting ? styles.disabled : styles.primary
+              }`}
             >
-              {isSubmitting ? "Signing Up..." : "Sign Up"}
+              {isSubmitting ? BUTTON_TEXT.SIGNING_UP : BUTTON_TEXT.SIGN_UP}
             </Button>
           </Box>
         </form>
@@ -139,18 +118,17 @@ const SignUp: React.FC = () => {
         {/* Sign In Button */}
         <Box mt={3} textAlign="center">
           <Typography variant="body1" gutterBottom>
-            Already have an account?
+            {BUTTON_TEXT.ALREADY_HAVE_ACCOUNT}
           </Typography>
           <Button
             variant="outlined"
             color="secondary"
             onClick={() => navigate("/signIn")}
           >
-            Sign In
+            {BUTTON_TEXT.SIGN_IN}
           </Button>
         </Box>
       </Box>
-      <p>My Component Heading</p>
     </Container>
   );
 };
