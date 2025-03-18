@@ -1,11 +1,24 @@
-import { Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { Button, FormControl } from "@mui/material";
 
 export const FormWrapper = styled("form")({
-  maxWidth: "800px",
+  width: "100%",
+  maxWidth: "1200px",
   margin: "auto",
 });
 
 export const StyledButton = styled(Button)({
   marginTop: "16px",
+  display: "block",
+  margin: "16px auto 0", // top, horizontal, bottom margins
+  minWidth: "120px",
+});
+export const RequiredFormControl = styled(FormControl)({
+  "& .MuiInputLabel-root": {
+    "&.Mui-required": {
+      "& .MuiInputLabel-asterisk": {
+        color: "#d32f2f",
+      },
+    },
+  },
 });

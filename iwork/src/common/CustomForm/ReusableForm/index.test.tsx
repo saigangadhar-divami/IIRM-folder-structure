@@ -1,6 +1,6 @@
+import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ReusableForm from "./index";
-import { jest } from "@jest/globals";
 import userEvent from "@testing-library/user-event";
 
 // Mock form submission function
@@ -35,6 +35,12 @@ interface FormField {
   required?: boolean;
 }
 
+interface ReusableFormProps {
+  fields: FormField[];
+  onSubmit: (data: Record<string, any>) => void;
+  columns?: number; // Number of columns for layout
+}
+
 describe("ReusableForm", () => {
   beforeEach(() => {
     mockOnSubmit.mockClear();
@@ -44,8 +50,8 @@ describe("ReusableForm", () => {
     render(<ReusableForm fields={formFields} onSubmit={mockOnSubmit} />);
 
     // Check if fields are rendered
-    expect(screen.getByLabelText("First Name")).toBeInTheDocument();
-    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByLabelText(/First Name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
     expect(screen.getByLabelText("Age")).toBeInTheDocument();
   });
 
@@ -68,7 +74,7 @@ describe("ReusableForm", () => {
     render(<ReusableForm fields={formFields} onSubmit={mockOnSubmit} />);
 
     // Enter an invalid email
-    userEvent.type(screen.getByLabelText("Email"), "invalid-email");
+    userEvent.type(screen.getByLabelText(/Email/i), "invalid-email");
 
     // Submit the form
     fireEvent.click(screen.getByText("Submit"));

@@ -13,24 +13,26 @@ import {
   Grid,
   IconButton,
   InputAdornment,
+  FormHelperText,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   requiredField,
   emailValidation,
   numberValidation,
-} from "../utils/formUtils";
-import { FieldType } from "./formFieldTypes";
+  //   minLength,
+} from "../utils/formUtils"; // Use validation rules now
+import { FieldType } from "./formFieldTypes"; // Ensure correct import
 import { FormWrapper, StyledButton } from "./styles";
 
 interface ReusableFormProps {
   fields: FieldType[];
   onSubmit: (data: Record<string, any>) => void;
-  columns?: number;
+  columns?: number; // Number of columns for layout
   defaultValues?: Record<string, any>;
-  isEditMode?: boolean;
-  initialData?: Record<string, any>;
-  submitButtonText?: string;
+  isEditMode?: boolean; // Add this line
+  initialData?: Record<string, any>; // Add this line
+  submitButtonText?: string; // Add this line
 }
 
 const ReusableForm: React.FC<ReusableFormProps> = ({
@@ -40,7 +42,7 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
   defaultValues,
   isEditMode = false,
   initialData = {},
-  submitButtonText = isEditMode ? "Update" : "Submit",
+  submitButtonText = isEditMode ? "Update" : "Submit", // Add default value
 }) => {
   const {
     handleSubmit,
@@ -89,6 +91,7 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
                   ...field.validation,
                 })}
                 label={field.label}
+                required={field.required}
                 type={
                   field.type === "password"
                     ? showPassword[field.name]
@@ -138,7 +141,7 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
               />
             ) : field.type === "select" ? (
               <FormControl fullWidth>
-                <InputLabel>{field.label}</InputLabel>
+                <InputLabel required={field.required}>{field.label}</InputLabel>
                 <Select
                   {...register(field.name, {
                     required: field.required
@@ -153,6 +156,11 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
                     </MenuItem>
                   ))}
                 </Select>
+                {errors[field.name] && (
+                  <FormHelperText error>
+                    {String(errors[field.name]?.message)}
+                  </FormHelperText>
+                )}
               </FormControl>
             ) : field.type === "checkbox" ? (
               <FormControlLabel
