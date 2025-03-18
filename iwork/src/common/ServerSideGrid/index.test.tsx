@@ -1,75 +1,106 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
-import ServerSideGrid from "./index";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import AgGridWithMuiPagination from "./index";
 import "@testing-library/jest-dom";
 import { ColDef } from "ag-grid-community";
+import { vi } from "vitest";
 
-const rowData = [
-  { id: 1, name: "John Doe", age: 28 },
-  { id: 2, name: "Jane Doe", age: 32 },
-];
-
-const columnDefs: ColDef[] = [
+const mockColumns: ColDef[] = [
+  { field: "id", headerName: "ID", width: 100 },
   { field: "name", headerName: "Name", width: 150 },
-  { field: "age", headerName: "Age", width: 100 },
 ];
 
-describe("ServerSideGrid Component", () => {
+const mockRowData = [
+  { id: 1, name: "John Doe" },
+  { id: 2, name: "Jane Doe" },
+];
+
+describe("AgGridWithMuiPagination Component", () => {
   it("renders correctly with required props", async () => {
     render(
-      <ServerSideGrid
-        rowData={rowData}
-        columnDefs={columnDefs}
-        paginationPageSize={5}
-        paginationPageSizeSelector={[5, 10, 20]}
-        height={400}
+      <AgGridWithMuiPagination
+        rows={mockRowData}
+        totalRecords={20}
+        currentPage={1}
         loading={false}
-        onPaginationChange={vi.fn()}
+        onPageChange={vi.fn()}
+        columns={mockColumns}
+        pageSize={10}
       />
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("treegrid")).toBeInTheDocument();
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
+      expect(screen.getByText("Jane Doe")).toBeInTheDocument();
     });
   });
 
-  it("calls onPaginationChange when pagination changes", async () => {
-    const mockOnPaginationChange = vi.fn();
+  it("displays CircularProgress when loading is true", () => {
     render(
-      <ServerSideGrid
-        rowData={rowData}
-        columnDefs={columnDefs}
-        pagination
-        paginationPageSize={5}
-        paginationPageSizeSelector={[5, 10, 20]}
-        height={400}
-        loading={false}
-        onPaginationChange={mockOnPaginationChange}
-      />
-    );
-
-    // Wait for AG Grid to initialize before checking
-    await waitFor(() => {
-      expect(mockOnPaginationChange).toHaveBeenCalled();
-    });
-  });
-
-  it("displays the loading state when loading is true", async () => {
-    render(
-      <ServerSideGrid
-        rowData={rowData}
-        columnDefs={columnDefs}
-        paginationPageSize={5}
-        paginationPageSizeSelector={[5, 10, 20]}
-        height={400}
+      <AgGridWithMuiPagination
+        rows={[]}
+        totalRecords={20}
+        currentPage={1}
         loading={true}
-        onPaginationChange={vi.fn()}
+        onPageChange={vi.fn()}
+        columns={mockColumns}
+        pageSize={10}
       />
     );
 
-    await waitFor(() => {
-      expect(screen.getByTestId("ag-grid-container")).toBeInTheDocument();
-    });
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
+  });
+
+  it("hides CircularProgress when loading is false", () => {
+    render(
+      <AgGridWithMuiPagination
+        rows={mockRowData}
+        totalRecords={20}
+        currentPage={1}
+        loading={false}
+        onPageChange={vi.fn()}
+        columns={mockColumns}
+        pageSize={10}
+      />
+    );
+
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+  });
+
+  it("renders Pagination component with correct page count", () => {
+    render(
+      <AgGridWithMuiPagination
+        rows={mockRowData}
+        totalRecords={50}
+        currentPage={1}
+        loading={false}
+        onPageChange={vi.fn()}
+        columns={mockColumns}
+        pageSize={10}
+      />
+    );
+
+    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByText("5")).toBeInTheDocument(); // 50 / 10 = 5 pages
+  });
+
+  it("calls onPageChange when pagination is clicked", async () => {
+    const mockOnPageChange = vi.fn();
+
+    render(
+      <AgGridWithMuiPagination
+        rows={mockRowData}
+        totalRecords={20}
+        currentPage={1}
+        loading={false}
+        onPageChange={mockOnPageChange}
+        columns={mockColumns}
+        pageSize={10}
+      />
+    );
+
+    // Click page 2 in the pagination
+    fireEvent.click(screen.getByText("2"));
+
+    expect(mockOnPageChange).toHaveBeenCalledWith(2);
   });
 });
