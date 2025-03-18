@@ -13,7 +13,6 @@ import {
   Grid,
   IconButton,
   InputAdornment,
-  FormHelperText,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
@@ -91,7 +90,6 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
                   ...field.validation,
                 })}
                 label={field.label}
-                required={field.required}
                 type={
                   field.type === "password"
                     ? showPassword[field.name]
@@ -141,7 +139,7 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
               />
             ) : field.type === "select" ? (
               <FormControl fullWidth>
-                <InputLabel required={field.required}>{field.label}</InputLabel>
+                <InputLabel>{field.label}</InputLabel>
                 <Select
                   {...register(field.name, {
                     required: field.required
@@ -156,11 +154,6 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
                     </MenuItem>
                   ))}
                 </Select>
-                {errors[field.name] && (
-                  <FormHelperText error>
-                    {String(errors[field.name]?.message)}
-                  </FormHelperText>
-                )}
               </FormControl>
             ) : field.type === "checkbox" ? (
               <FormControlLabel

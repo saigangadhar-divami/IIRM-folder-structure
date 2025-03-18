@@ -4,20 +4,38 @@ import { ValidationRule } from "react-hook-form";
 
 export const requiredField = (message: string): ValidationRule<boolean> => ({
   value: true,
-  message,
+  message: message,
 });
 
 export const emailValidation = {
   pattern: {
-    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
     message: "Invalid email address",
   },
 };
 
 export const numberValidation = {
   pattern: {
-    value: /^[0-9]*$/,
-    message: "Only numbers are allowed",
+    value: /^[0-9]+$/,
+    message: "Please enter only numbers",
+  },
+};
+
+export const phoneValidation = {
+  pattern: {
+    value: /^[0-9]{10}$/,
+    message: "Please enter a valid 10-digit phone number",
+  },
+};
+
+export const passwordValidation = {
+  minLength: {
+    value: 8,
+    message: "Password must be at least 8 characters",
+  },
+  pattern: {
+    value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+    message: "Password must contain letters, numbers and special characters",
   },
 };
 

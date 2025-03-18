@@ -3,7 +3,7 @@ import { Button, FormControl } from "@mui/material";
 
 export const FormWrapper = styled("form")({
   width: "100%",
-  maxWidth: "800px",
+  maxWidth: "1200px",
   margin: "auto",
 });
 
