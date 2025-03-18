@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button, Container, Typography, Box, Alert } from "@mui/material";
 import styles from "./index.module.scss";
@@ -20,6 +20,7 @@ interface SignInFormData {
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for error message
   const {
     control,
     handleSubmit,
@@ -30,19 +31,7 @@ const SignIn: React.FC = () => {
     try {
       const storedUsername = localStorage.getItem("username");
       const storedPassword = localStorage.getItem("password");
-      // const API_URL =  API_URL;
-      // const response = await axios.post(API_URL, data, {
-      //   headers: { "Content-Type": "application/json" },
-      //   timeout: 5000, // 5 seconds timeout
-      // });
 
-      // // Check if response contains a token (modify as per your API response)
-      // if (response.data?.token) {
-      //   localStorage.setItem("authToken", response.data.token);
-      // }
-
-      // console.log("Login successful", response.data);
-      // navigate("/home");
       if (
         data.username === storedUsername &&
         data.password === storedPassword
@@ -55,18 +44,18 @@ const SignIn: React.FC = () => {
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         if (error.code === "ECONNABORTED") {
-          alert(ALERT_MESSAGES.REQUEST_TIMEOUT);
+          setErrorMessage(ALERT_MESSAGES.REQUEST_TIMEOUT);
         } else if (error.response) {
-          alert(
+          setErrorMessage(
             error.response.data?.message || ALERT_MESSAGES.INVALID_CREDENTIALS
           );
         } else if (error.request) {
-          alert(ALERT_MESSAGES.NO_SERVER_RESPONSE);
+          setErrorMessage(ALERT_MESSAGES.NO_SERVER_RESPONSE);
         } else {
-          alert(ALERT_MESSAGES.GENERIC_ERROR);
+          setErrorMessage(ALERT_MESSAGES.GENERIC_ERROR);
         }
       } else {
-        alert(ALERT_MESSAGES.UNKNOWN_ERROR);
+        setErrorMessage(ALERT_MESSAGES.INVALID_CREDENTIALS);
       }
     }
   };
@@ -82,8 +71,13 @@ const SignIn: React.FC = () => {
         >
           {BUTTON_TEXT.TITLE}
         </Typography>
+        {errorMessage && ( // Display error message in the DOM
+          <Alert severity="error" className={styles.alert}>
+            {errorMessage}
+          </Alert>
+        )}
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-          {FIELDS.map((field: FormField) => (
+          {FIELDS.map((field) => (
             <div key={field.id}>
               <TextField
                 id={field.id}
@@ -97,13 +91,13 @@ const SignIn: React.FC = () => {
                 disabled={isSubmitting}
                 aria-label={field.label}
                 className={styles.textField}
-                error={!!errors[field.name]}
-                helperText={errors[field.name]?.message}
+                error={!!errors[field.name as keyof SignInFormData]}
+                helperText={errors[field.name as keyof SignInFormData]?.message}
                 validationRules={field.validationRules}
               />
-              {errors[field.name]?.message && (
+              {errors[field.name as keyof SignInFormData]?.message && (
                 <Alert severity="error" className={styles.alert}>
-                  {errors[field.name]?.message}
+                  {errors[field.name as keyof SignInFormData]?.message}
                 </Alert>
               )}
             </div>

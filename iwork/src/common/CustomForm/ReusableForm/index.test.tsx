@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ReusableForm from "./index";
 import userEvent from "@testing-library/user-event";
@@ -35,11 +34,7 @@ interface FormField {
   required?: boolean;
 }
 
-interface ReusableFormProps {
-  fields: FormField[];
-  onSubmit: (data: Record<string, any>) => void;
-  columns?: number; // Number of columns for layout
-}
+// Removed unused ReusableFormProps interface
 
 describe("ReusableForm", () => {
   beforeEach(() => {
