@@ -2,16 +2,13 @@ import { Box, CircularProgress, styled } from "@mui/material";
 
 export const Wrapper = styled(Box)(({ theme }) => ({
   width: "100%",
-  padding: theme.spacing(2),
+    padding: theme.spacing(2),
 }));
 
-export const GridBox = styled(Box)(({ theme }) => ({
-  height: "calc(100vh - 250px)",
-  width: "100%",
-  overflow: "hidden",
-  position: "relative",
+export const GridContainer = styled("div")(({ theme }) => ({
+    width: "100%",
 }));
-
+  
 export const Loader = styled(CircularProgress)({
   position: "absolute",
   top: "50%",
