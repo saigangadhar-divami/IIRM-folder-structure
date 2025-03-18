@@ -8,10 +8,11 @@ const useTableController = () => {
   const [pageSize, setPageSize] = useState(5);
 
   const [filters, setFilters] = useState("");
-  const [loader, setLoader] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const pageSizeOptions = [5, 10, 20];
 
     useEffect(() => {
-      setLoader(true);
+      setLoading(true);
     // fetchStudents(page, pageSize, filters).then((data) => {
     //   setRows(data.students);
     //   setTotalRowsCount(data.totalCount);
@@ -25,7 +26,8 @@ const useTableController = () => {
         page,
         pageSize,
         filters,
-        loader,
+        loading,
+        pageSizeOptions,
         setPage,
         setPageSize,
         setFilters
