@@ -10,83 +10,75 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  Button,
   Grid,
-  styled,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   requiredField,
   emailValidation,
   numberValidation,
-  //   minLength,
-} from "../utils/formUtils"; // Use validation rules now
-
-type FieldType =
-  | "text"
-  | "number"
-  | "email"
-  | "password"
-  | "select"
-  | "checkbox"
-  | "radio"
-  | "date";
-
-interface FormField {
-  name: string;
-  label: string;
-  type: FieldType;
-  required?: boolean;
-  options?: { label: string; value: string | number }[]; // For select, radio fields
-  validation?: Record<string, any>; // Custom validation rules
-}
+} from "../utils/formUtils";
+import { FieldType } from "./formFieldTypes";
+import { FormWrapper, StyledButton } from "./styles";
 
 interface ReusableFormProps {
-  fields: FormField[];
+  fields: FieldType[];
   onSubmit: (data: Record<string, any>) => void;
-  columns?: number; // Number of columns for layout
+  columns?: number;
+  defaultValues?: Record<string, any>;
+  isEditMode?: boolean;
+  initialData?: Record<string, any>;
+  submitButtonText?: string;
 }
-
-const FormWrapper = styled("form")({
-  maxWidth: "800px",
-  margin: "auto",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: "20px",
-});
-
-const StyledGrid = styled(Grid)({
-  width: "100%",
-  display: "flex",
-  justifyContent: "center",
-});
-
-const StyledButton = styled(Button)({
-  marginTop: "16px",
-});
 
 const ReusableForm: React.FC<ReusableFormProps> = ({
   fields,
   onSubmit,
   columns = 1,
+  defaultValues,
+  isEditMode = false,
+  initialData = {},
+  submitButtonText = isEditMode ? "Update" : "Submit",
 }) => {
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm();
+    reset,
+  } = useForm({
+    defaultValues: isEditMode ? initialData : defaultValues,
+  });
+
+  const [showPassword, setShowPassword] = React.useState<
+    Record<string, boolean>
+  >({});
+
+  const handleTogglePassword = (fieldName: string) => {
+    setShowPassword((prev) => ({
+      ...prev,
+      [fieldName]: !prev[fieldName],
+    }));
+  };
+
+  React.useEffect(() => {
+    if (isEditMode && initialData) {
+      reset(initialData);
+    }
+  }, [isEditMode, initialData, reset]);
 
   return (
-    <FormWrapper onSubmit={handleSubmit(onSubmit)}>
-      <StyledGrid container spacing={2}>
+    <FormWrapper onSubmit={handleSubmit((data) => onSubmit(data))}>
+      <Grid container spacing={2}>
         {fields.map((field) => (
           <Grid item xs={12} sm={12 / columns} key={field.name}>
             {field.type === "text" ||
             field.type === "number" ||
             field.type === "email" ||
             field.type === "password" ||
-            field.type === "date" ? (
+            field.type === "date" ||
+            field.type === "textarea" ? (
               <TextField
                 {...register(field.name, {
                   required: field.required
@@ -97,9 +89,47 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
                   ...field.validation,
                 })}
                 label={field.label}
-                type={field.type}
+                type={
+                  field.type === "password"
+                    ? showPassword[field.name]
+                      ? "text"
+                      : "password"
+                    : field.type === "textarea"
+                    ? "text"
+                    : field.type
+                }
+                InputProps={
+                  field.type === "password"
+                    ? {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => handleTogglePassword(field.name)}
+                              edge="end"
+                            >
+                              {showPassword[field.name] ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }
+                    : undefined
+                }
+                multiline={field.type === "textarea"}
+                rows={field.type === "textarea" ? 4 : undefined}
+                disabled={field.disabled}
+                hidden={field.hidden}
                 fullWidth
                 error={!!errors[field.name]}
+                InputLabelProps={
+                  field.type === "date" || field.type === "textarea"
+                    ? { shrink: true }
+                    : undefined
+                }
                 helperText={
                   errors[field.name]?.message
                     ? String(errors[field.name]?.message)
@@ -153,10 +183,10 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
             ) : null}
           </Grid>
         ))}
-      </StyledGrid>
+      </Grid>
 
       <StyledButton type="submit" variant="contained" color="primary">
-        Submit
+        {submitButtonText}
       </StyledButton>
     </FormWrapper>
   );
