@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import {registerServiceWorker} from '../../ServiceWorkerRegistration.tsx'
+import { BrowserRouter } from "react-router-dom";
 
 
 // Sentry.init({
@@ -12,9 +13,9 @@ import {registerServiceWorker} from '../../ServiceWorkerRegistration.tsx'
 // });
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  <BrowserRouter>
     <App />
-  </StrictMode>,
+  </BrowserRouter>,
 )
 
 // Register service worker

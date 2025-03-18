@@ -1,74 +1,59 @@
-import { useRef } from "react";
-import { AgGridReact } from "ag-grid-react";
+import React from "react";
+import { AgGridReact, AgGridReactProps } from "ag-grid-react";
+import { Pagination } from "@mui/material";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { ColDef, GridOptions } from "ag-grid-community";
+import { ColDef } from "ag-grid-community";
+import { GridBox, Loader, PaginationContainer, Wrapper } from "./styles";
 
-interface AGGridProps extends Partial<GridOptions> {
-  rowData: any[];
-  columnDefs: ColDef[];
-  pagination?: boolean;
-  paginationPageSize: number;
-  paginationPageSizeSelector: number[];
-  height: number;
-  onPaginationChange: ({
-    currentPage,
-    pageSize,
-  }: {
-    currentPage: number;
-    pageSize: number;
-  }) => void;
-  width?: string | number;
+interface ServerSideGridProps extends AgGridReactProps {
+  totalRecords: number;
+  currentPage: number;
   loading: boolean;
+  onPageChange: (page: number) => void;
+  pageSize: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  rows: any[];
+  columns: ColDef[];
+  height?: number;
 }
 
-const ServerSideGrid: React.FC<AGGridProps> = ({
-  rowData,
-  columnDefs,
-  pagination = true,
-  paginationPageSize,
-  paginationPageSizeSelector,
-  height,
-  width = "100%",
-  onPaginationChange,
+const ServerSideGrid: React.FC<ServerSideGridProps> = ({
+  rows,
+  totalRecords,
+  currentPage,
   loading,
+  onPageChange,
+  columns,
+  pageSize,
+  height = 400,
   ...rest
 }) => {
-  const gridRef = useRef<AgGridReact>(null);
-
-  /**
-   * Handles the pagination change event.
-   * This function is called whenever the pagination state changes.
-   * It retrieves the current page number and page size from the grid API,
-   * logs them to the console, and calls the onPaginationChange callback
-   * with the current page and page size.
-   */
-  const onPaginationChanged = () => {
-    if (gridRef.current?.api) {
-      const currentPage = gridRef.current.api.paginationGetCurrentPage() + 1;
-      // const totalPages = gridRef.current.api.paginationGetTotalPages();
-      const pageSize = gridRef.current.api.paginationGetPageSize();
-      //   console.log(`Current Page: ${currentPage}, pagesize: ${pageSize}`);
-      onPaginationChange({ currentPage, pageSize });
-    }
-  };
-
   return (
-    <div
-      data-testid="ag-grid-container"
-      className="ag-theme-alpine"
-      style={{ height: 400, width }}
-    >
-      <AgGridReact
-        ref={gridRef}
-        rowData={rowData}
-        columnDefs={columnDefs}
-        pagination={pagination}
-        paginationPageSize={paginationPageSize}
-        paginationPageSizeSelector={paginationPageSizeSelector}
-        onPaginationChanged={onPaginationChanged}
-        {...rest}
-      />
+    <div className="ag-theme-alpine" style={{ height, width: "100%" }}>
+      <Wrapper>
+        <GridBox className="ag-theme-alpine">
+          {loading && <Loader />}
+          <AgGridReact
+            columnDefs={columns}
+            rowData={rows}
+            rowHeight={50}
+            headerHeight={50}
+            suppressScrollOnNewData
+            domLayout="normal"
+            rowModelType="clientSide"
+            {...rest}
+          />
+        </GridBox>
+        <PaginationContainer>
+          <Pagination
+            count={Math.ceil(totalRecords / pageSize)}
+            page={currentPage}
+            onChange={(_, page) => onPageChange(page)}
+            color="primary"
+          />
+        </PaginationContainer>
+      </Wrapper>
     </div>
   );
 };

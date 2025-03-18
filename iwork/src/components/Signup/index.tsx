@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Button, Container, Typography, Box, Alert } from "@mui/material";
+import { Container, Typography, Box, Alert } from "@mui/material";
 import styles from "./index.module.scss";
-import TextField from "../TextField";
 import {
   SIGNUP_FIELDS,
   ALERT_MESSAGES,
   BUTTON_TEXT,
   CONSOLE_MESSAGES,
 } from "../../constants";
+import axios from "axios";
+import TextField from "../../common/TestField";
+import ToastMessage from "../../common/Toast";
+import Button from "../../common/Button";
 
 interface SignUpFormData {
   username: string;
@@ -47,19 +50,23 @@ const SignUp: React.FC = () => {
       localStorage.setItem("password", data.password);
 
       console.log(CONSOLE_MESSAGES.SIGNUP_SUCCESS, data);
-      // Navigate to signIn page
-      navigate("/signIn");
+      showToast();
+      setTimeout(() => {
+        navigate("/signIn");
+      }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        setError(
-          error.response?.data?.message || ALERT_MESSAGES.SIGNUP_FAILED
-        );
+        setError(error.response?.data?.message || ALERT_MESSAGES.SIGNUP_FAILED);
       } else {
         setError(ALERT_MESSAGES.UNKNOWN_ERROR);
       }
     }
   };
 
+  const [open, setOpen] = useState(false);
+
+  const showToast = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   return (
     <Container maxWidth="sm" className={styles.container}>
       <Box mt={5}>
@@ -91,8 +98,8 @@ const SignUp: React.FC = () => {
                 disabled={isSubmitting}
                 aria-label={field.label}
                 className={styles.textField} // Apply the same style here
-                error={!!errors[field.name]}
-                helperText={errors[field.name]?.message}
+                error={!!errors[field.name as keyof SignUpFormData]}
+                helperText={errors[field.name as keyof SignUpFormData]?.message}
                 validationRules={field.validationRules}
               />
             </div>
@@ -123,12 +130,21 @@ const SignUp: React.FC = () => {
           <Button
             variant="outlined"
             color="secondary"
-            onClick={() => navigate("/signIn")}
+            onClick={() => {
+              navigate("/signIn");
+            }}
           >
             {BUTTON_TEXT.SIGN_IN}
           </Button>
         </Box>
       </Box>
+      {/* <button onClick={showToast}>Show Success Toast</button> */}
+      <ToastMessage
+        open={open}
+        onClose={handleClose}
+        variant="info"
+        message="Data fetched Successful!"
+      />
     </Container>
   );
 };

@@ -207,3 +207,6 @@ export const BUTTON_TEXT = {
   ALREADY_HAVE_ACCOUNT: "Already have an account?",
   SIGN_IN: "Sign In",
 };
+export const TOAST_MESSAGE = {
+  DEFAULT_AUTO_HIDE_DURATION: 4000,
+};
