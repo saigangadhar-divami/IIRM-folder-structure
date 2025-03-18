@@ -1,10 +1,10 @@
 import React from "react";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
-import { Pagination } from "@mui/material";
+import { Box, Pagination } from "@mui/material";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ColDef } from "ag-grid-community";
-import { GridBox, Loader, PaginationContainer, Wrapper } from "./styles";
+import { GridContainer, Loader, PaginationContainer, Wrapper } from "./styles";
 
 interface ServerSideGridProps extends AgGridReactProps {
   totalRecords: number;
@@ -26,25 +26,24 @@ const ServerSideGrid: React.FC<ServerSideGridProps> = ({
   onPageChange,
   columns,
   pageSize,
-  height = 400,
+  height = 570,
   ...rest
 }) => {
   return (
-    <div className="ag-theme-alpine" style={{ height, width: "100%" }}>
+    <GridContainer className="ag-theme-alpine" style={{ width: "100%" }}>
       <Wrapper>
-        <GridBox className="ag-theme-alpine">
+        <Box className="ag-theme-alpine" style={{ height }}>
           {loading && <Loader />}
           <AgGridReact
             columnDefs={columns}
             rowData={rows}
             rowHeight={50}
             headerHeight={50}
-            suppressScrollOnNewData
             domLayout="normal"
             rowModelType="clientSide"
             {...rest}
           />
-        </GridBox>
+        </Box>
         <PaginationContainer>
           <Pagination
             count={Math.ceil(totalRecords / pageSize)}
@@ -54,7 +53,7 @@ const ServerSideGrid: React.FC<ServerSideGridProps> = ({
           />
         </PaginationContainer>
       </Wrapper>
-    </div>
+    </GridContainer>
   );
 };
 
