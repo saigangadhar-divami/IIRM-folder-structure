@@ -203,10 +203,10 @@ for (let i = 11; i <= 102; i++) {
 }
 
 function EmployeeTable() {
+  const navigate = useNavigate();
+
   const [rows, setRows] = useState<any[]>([]);
-
   const [currentPage, setCurrentPage] = useState(1);
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -311,7 +311,6 @@ function EmployeeTable() {
   };
 
   const PAGE_SIZE = 4;
-  const navigate = useNavigate();
 
   return (
     <>

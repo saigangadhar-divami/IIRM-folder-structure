@@ -1,7 +1,10 @@
 import React from "react";
 import CommonAGGrid from "../../common/ClientSideGrid";
+import { useNavigate } from "react-router-dom";
 
-const CompanyTable:React.FC = () => {
+const CompanyTable: React.FC = () => {
+  const navigate = useNavigate();
+
   const dummyData = [
     {
       companyId: 9,
@@ -74,7 +77,7 @@ const CompanyTable:React.FC = () => {
       existingBrokerLid: 3,
       paidUpCapital: 20000000,
       tanNumber: "TAN6543210",
-    }
+    },
   ];
 
   const columnDefs = [
@@ -97,6 +100,9 @@ const CompanyTable:React.FC = () => {
       paginationPageSize={10}
       paginationPageSizeSelector={[10, 20, 50]}
       height={500}
+      onRowClicked={(event) =>
+        navigate("/employeeDetails", { state: { row: event.data } })
+      }
     />
   );
 };
