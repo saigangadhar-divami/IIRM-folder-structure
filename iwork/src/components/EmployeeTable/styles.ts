@@ -1,4 +1,14 @@
 import { Box, CircularProgress, IconButton, Tooltip, styled } from "@mui/material";
+import { createGlobalStyle } from "styled-components";
+
+export const GlobalStyles = createGlobalStyle`
+  .ag-pinned-right-header {
+    border-left: none !important;
+  }
+  .ag-pinned-right-cols-container {
+    border-left: none !important;
+  }
+`;
 
 export const Wrapper = styled(Box)(({ theme }) => ({
   width: "100%",

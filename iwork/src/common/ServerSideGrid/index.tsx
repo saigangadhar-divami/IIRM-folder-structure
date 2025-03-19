@@ -1,11 +1,10 @@
 import React from "react";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
-import { Box, Pagination } from "@mui/material";
+import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ColDef } from "ag-grid-community";
 import { GridContainer, Loader, PaginationContainer, Wrapper } from "./styles";
-
 interface ServerSideGridProps extends AgGridReactProps {
   totalRecords: number;
   currentPage: number;
@@ -16,6 +15,8 @@ interface ServerSideGridProps extends AgGridReactProps {
   rows: any[];
   columns: ColDef[];
   height?: number;
+  pageSizeOptions: number[];
+  onPageSizeChange: (pageSize: number) => void;
 }
 
 const ServerSideGrid: React.FC<ServerSideGridProps> = ({
@@ -26,6 +27,8 @@ const ServerSideGrid: React.FC<ServerSideGridProps> = ({
   onPageChange,
   columns,
   pageSize,
+  pageSizeOptions,
+  onPageSizeChange,
   height = 570,
   ...rest
 }) => {
@@ -44,7 +47,35 @@ const ServerSideGrid: React.FC<ServerSideGridProps> = ({
             {...rest}
           />
         </Box>
+
         <PaginationContainer>
+          <FormControl
+            sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+            variant="outlined"
+            size="small"
+          >
+            <Box sx={{ marginRight: 1 }}>Page Size: </Box>
+            <Select
+              value={pageSize}
+              onChange={(e) => onPageSizeChange(Number(e.target.value))}
+              MenuProps={{
+                anchorOrigin: {
+                  vertical: "top",
+                  horizontal: "left",
+                },
+                transformOrigin: {
+                  vertical: "bottom",
+                  horizontal: "left",
+                },
+              }}
+            >
+              {pageSizeOptions.map((size: number) => (
+                <MenuItem key={size} value={size}>
+                  {size}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <Pagination
             count={Math.ceil(totalRecords / pageSize)}
             page={currentPage}

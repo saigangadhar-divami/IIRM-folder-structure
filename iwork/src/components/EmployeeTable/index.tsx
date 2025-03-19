@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 import { ColDef } from "ag-grid-community";
 import ServerSideGrid from "../../common/ServerSideGrid";
 import ClientSideGrid from "../../common/ClientSideGrid";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { ActionsCell, DeleteIconButton, EditIconButton } from "./styles";
+import {
+  ActionsCell,
+  DeleteIconButton,
+  EditIconButton,
+  GlobalStyles,
+} from "./styles";
 import { useNavigate } from "react-router-dom";
 
 export var rowData = [
@@ -181,7 +186,6 @@ export var rowData = [
   },
 ];
 
-// Generate remaining 90 rows...
 for (let i = 11; i <= 102; i++) {
   rowData.push({
     id: i,
@@ -203,12 +207,12 @@ for (let i = 11; i <= 102; i++) {
 }
 
 function EmployeeTable() {
-  const navigate = useNavigate();
-
   const [rows, setRows] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [loading, setLoading] = useState(false);
+  const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
@@ -216,9 +220,6 @@ function EmployeeTable() {
       setRows(rowData.slice((currentPage - 1) * 10, currentPage * 10 + 10));
     }, 2000);
   }, [currentPage]);
-
-  console.log("rows", rowData);
-  console.log("Current Page", currentPage);
 
   const columns: ColDef[] = [
     { field: "id", headerName: "ID", width: 100 },
@@ -228,9 +229,9 @@ function EmployeeTable() {
       headerName: "Name",
       width: 200,
       cellStyle: { textAlign: "left" },
-      filter: "agTextColumnFilter", // Use the correct filter type
+      filter: "agTextColumnFilter",
       valueGetter: (params: any) =>
-        `${params.data.firstName} ${params.data.lastName}`, // Ensure filtering works
+        `${params.data.firstName} ${params.data.lastName}`,
       cellRenderer: (params: any) => {
         return (
           <div
@@ -262,12 +263,18 @@ function EmployeeTable() {
     { field: "iirmEmpId", headerName: "IIRM Employee ID", width: 150 },
     { field: "iworkRoleId", headerName: "IWork Role ID", width: 140 },
     {
-      headerName: "-333",
-      field: "actions3333",
-      width: 100,
+      headerName: "",
+      field: "actions",
+      width: 80,
       sortable: false,
-      headerClass: "ag-right-aligned-header",
+      cellStyle: (params) => ({
+        textAlign: "right",
+        borderLeft: "none",
+      }),
+      headerClass: "no-left-border-header",
       cellRenderer: (params: any) => {
+        const isHovered = hoveredRowId === params.node.rowIndex;
+
         const handleEdit = (e: any) => {
           e.stopPropagation();
         };
@@ -277,7 +284,12 @@ function EmployeeTable() {
         };
 
         return (
-          <ActionsCell className="actions-cell">
+          <ActionsCell
+            sx={{
+              display: isHovered ? "flex" : "none",
+            }}
+            className="actions-cell"
+          >
             <Tooltip title="Edit">
               <EditIconButton size="small" onClick={handleEdit}>
                 <EditIcon fontSize="small" />
@@ -311,6 +323,8 @@ function EmployeeTable() {
   };
 
   const PAGE_SIZE = 4;
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -323,6 +337,7 @@ function EmployeeTable() {
             setSearch(e.target.value);
           }}
         />
+        <GlobalStyles />
         <ClientSideGrid
           rowData={filterRows()}
           columnDefs={columns}
@@ -332,19 +347,27 @@ function EmployeeTable() {
           onRowClicked={(event) =>
             navigate("/employeeDetails", { state: { row: event.data } })
           }
+          onCellMouseOver={(event) => setHoveredRowId(event.node.rowIndex)}
+          onCellMouseOut={() => setHoveredRowId(null)}
         />
+
         <ServerSideGrid
           key="messages-grid"
           rows={rowData.slice(
-            (currentPage - 1) * PAGE_SIZE,
-            currentPage * PAGE_SIZE
+            (currentPage - 1) * pageSize,
+            currentPage * pageSize
           )}
           totalRecords={rowData.length}
           currentPage={currentPage}
           loading={loading}
           onPageChange={setCurrentPage}
           columns={columns}
-          pageSize={PAGE_SIZE}
+          pageSize={pageSize}
+          pageSizeOptions={[4, 5, 10, 20]}
+          onPageSizeChange={(pageSize) => [
+            setPageSize(pageSize),
+            setCurrentPage(1),
+          ]}
           defaultColDef={{
             filter: true,
             floatingFilter: true,

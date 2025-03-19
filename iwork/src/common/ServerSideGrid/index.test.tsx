@@ -14,7 +14,7 @@ const mockRowData = [
   { id: 2, name: "Jane Doe" },
 ];
 
-describe("AgGridWithMuiPagination Component", () => {
+describe("ServerSideGrid Component", () => {
   it("renders correctly with required props", async () => {
     render(
       <ServerSideGrid
@@ -23,6 +23,8 @@ describe("AgGridWithMuiPagination Component", () => {
         currentPage={1}
         loading={false}
         onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+        pageSizeOptions={[5, 10, 20]}
         columns={mockColumns}
         pageSize={10}
       />
@@ -42,6 +44,8 @@ describe("AgGridWithMuiPagination Component", () => {
         currentPage={1}
         loading={true}
         onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+        pageSizeOptions={[5, 10, 20]}
         columns={mockColumns}
         pageSize={10}
       />
@@ -58,6 +62,8 @@ describe("AgGridWithMuiPagination Component", () => {
         currentPage={1}
         loading={false}
         onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+        pageSizeOptions={[5, 10, 20]}
         columns={mockColumns}
         pageSize={10}
       />
@@ -74,6 +80,8 @@ describe("AgGridWithMuiPagination Component", () => {
         currentPage={1}
         loading={false}
         onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+        pageSizeOptions={[5, 10, 20]}
         columns={mockColumns}
         pageSize={10}
       />
@@ -93,6 +101,8 @@ describe("AgGridWithMuiPagination Component", () => {
         currentPage={1}
         loading={false}
         onPageChange={mockOnPageChange}
+        onPageSizeChange={vi.fn()}
+        pageSizeOptions={[5, 10, 20]}
         columns={mockColumns}
         pageSize={10}
       />
@@ -102,5 +112,34 @@ describe("AgGridWithMuiPagination Component", () => {
     fireEvent.click(screen.getByText("2"));
 
     expect(mockOnPageChange).toHaveBeenCalledWith(2);
+  });
+
+  it("calls onPageSizeChange when a new page size is selected", async () => {
+    const mockOnPageSizeChange = vi.fn();
+
+    render(
+      <ServerSideGrid
+        rows={mockRowData}
+        totalRecords={20}
+        currentPage={1}
+        loading={false}
+        onPageChange={vi.fn()}
+        onPageSizeChange={mockOnPageSizeChange}
+        pageSizeOptions={[5, 10, 20]}
+        columns={mockColumns}
+        pageSize={10}
+      />
+    );
+
+    // Target the combobox element
+    const select = screen.getByRole("combobox");
+
+    // Open the select dropdown
+    fireEvent.mouseDown(select);
+
+    // Select "20" as the new page size
+    fireEvent.click(screen.getByText("20"));
+
+    expect(mockOnPageSizeChange).toHaveBeenCalledWith(20);
   });
 });
