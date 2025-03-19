@@ -9,7 +9,8 @@ export interface FieldType {
       | "textarea"
       | "select"
       | "checkbox"
-      | "radio";
+      | "radio"
+      | "richtext";
     label: string;
     required?: boolean;
     validation?: Record<string, any>;

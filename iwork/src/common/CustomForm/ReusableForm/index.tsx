@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {
   TextField,
   MenuItem,
@@ -22,6 +22,7 @@ import {
 } from "../utils/formUtils";
 import { FieldType } from "./formFieldTypes";
 import { FormWrapper, StyledButton } from "./styles";
+import RichText from "../../RichText";
 
 interface ReusableFormProps {
   fields: FieldType[];
@@ -47,6 +48,8 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
     register,
     formState: { errors },
     reset,
+    control,
+    setValue
   } = useForm({
     defaultValues: isEditMode ? initialData : defaultValues,
   });
@@ -180,7 +183,27 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
                   ))}
                 </RadioGroup>
               </FormControl>
-            ) : null}
+            ) 
+             : field.type === "richtext" ? (
+              <Controller
+            name={field.name}
+            control={control}
+            defaultValue=""
+            rules={field.validation}
+            render={({ field: controllerField }) => (
+              <RichText
+                key={field.name}
+                value={controllerField.value}
+                onChange={(newValue) => {
+                  setValue(field.name, newValue, { shouldValidate: true });
+                }}
+                richTextLabel={field
+                  .label}
+              />
+            )}
+          />
+            )
+            : null}
           </Grid>
         ))}
       </Grid>

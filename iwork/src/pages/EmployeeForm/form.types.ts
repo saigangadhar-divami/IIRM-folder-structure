@@ -8,7 +8,8 @@ export type FieldType =
   | "textarea"
   | "password"
   | "email"
-  | "date";
+  | "date"
+  | "richtext";
 
 // Define the structure for form field options (for select dropdowns)
 export interface FieldOption {
@@ -33,4 +34,5 @@ export interface FormField {
   validation?: ValidationRules;
   hidden?: boolean;
   disabled?: boolean;
+  fields?: FormField[]; // Only applicable for group fields
 }
