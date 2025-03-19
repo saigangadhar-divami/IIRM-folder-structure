@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import AgGridWithMuiPagination from "./index";
+import ServerSideGrid from "./index";
 import "@testing-library/jest-dom";
 import { ColDef } from "ag-grid-community";
 import { vi } from "vitest";
@@ -17,7 +17,7 @@ const mockRowData = [
 describe("AgGridWithMuiPagination Component", () => {
   it("renders correctly with required props", async () => {
     render(
-      <AgGridWithMuiPagination
+      <ServerSideGrid
         rows={mockRowData}
         totalRecords={20}
         currentPage={1}
@@ -36,7 +36,7 @@ describe("AgGridWithMuiPagination Component", () => {
 
   it("displays CircularProgress when loading is true", () => {
     render(
-      <AgGridWithMuiPagination
+      <ServerSideGrid
         rows={[]}
         totalRecords={20}
         currentPage={1}
@@ -52,7 +52,7 @@ describe("AgGridWithMuiPagination Component", () => {
 
   it("hides CircularProgress when loading is false", () => {
     render(
-      <AgGridWithMuiPagination
+      <ServerSideGrid
         rows={mockRowData}
         totalRecords={20}
         currentPage={1}
@@ -68,7 +68,7 @@ describe("AgGridWithMuiPagination Component", () => {
 
   it("renders Pagination component with correct page count", () => {
     render(
-      <AgGridWithMuiPagination
+      <ServerSideGrid
         rows={mockRowData}
         totalRecords={50}
         currentPage={1}
@@ -87,7 +87,7 @@ describe("AgGridWithMuiPagination Component", () => {
     const mockOnPageChange = vi.fn();
 
     render(
-      <AgGridWithMuiPagination
+      <ServerSideGrid
         rows={mockRowData}
         totalRecords={20}
         currentPage={1}
