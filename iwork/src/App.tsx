@@ -6,6 +6,7 @@ import CompanyTable from "./components/CompanyTable";
 import Header from "./common/Header";
 import EmployeeForm from "./pages/EmployeeForm";
 import EmployeeTable from "./components/EmployeeTable";
+import EmployeeDetails from "./components/EmployeeDetails";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/signIn" element={<SignIn />} />
         <Route path="/home" element={<CompanyTable />} />
         <Route path="/employee" element={<EmployeeTable />} />
+        <Route path="/employeeDetails" element={<EmployeeDetails />} />
       </Routes>
       <EmployeeForm />
     </>

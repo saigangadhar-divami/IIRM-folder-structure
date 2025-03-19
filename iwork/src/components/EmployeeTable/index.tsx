@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { ColDef } from "ag-grid-community";
 import ServerSideGrid from "../../common/ServerSideGrid";
+import ClientSideGrid from "../../common/ClientSideGrid";
+import { Box, IconButton, Tooltip } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { ActionsCell, DeleteIconButton, EditIconButton } from "./styles";
+import { useNavigate } from "react-router-dom";
 
 export var rowData = [
   {
@@ -214,7 +220,7 @@ function EmployeeTable() {
   console.log("rows", rowData);
   console.log("Current Page", currentPage);
 
-  const columnDefs2: ColDef[] = [
+  const columns: ColDef[] = [
     { field: "id", headerName: "ID", width: 100 },
     { field: "salutation", headerName: "Salutation", width: 120 },
     {
@@ -243,18 +249,7 @@ function EmployeeTable() {
     {
       field: "emailId",
       headerName: "Email",
-      // flex: 1,
-      //   filter: "agTextColumnFilter",
       width: 250,
-      // filterParams: {
-      //   filterOptions: ["contains"],
-      //   textMatcher: (props: any) => {
-      //     return props.data.country.name
-      //       .toLowerCase()
-      //       .includes(props.filterText);
-      //   },
-      //   trimInput: true,
-      // },
     },
     { field: "mobile", headerName: "Mobile", width: 150 },
     { field: "loginName", headerName: "Login Name", width: 150 },
@@ -266,20 +261,91 @@ function EmployeeTable() {
     { field: "reportingUserId", headerName: "Reporting User ID", width: 160 },
     { field: "iirmEmpId", headerName: "IIRM Employee ID", width: 150 },
     { field: "iworkRoleId", headerName: "IWork Role ID", width: 140 },
+    {
+      headerName: "-333",
+      field: "actions3333",
+      width: 100,
+      sortable: false,
+      headerClass: "ag-right-aligned-header",
+      cellRenderer: (params: any) => {
+        const handleEdit = (e: any) => {
+          e.stopPropagation();
+        };
+
+        const handleDelete = (e: any) => {
+          e.stopPropagation();
+        };
+
+        return (
+          <ActionsCell className="actions-cell">
+            <Tooltip title="Edit">
+              <EditIconButton size="small" onClick={handleEdit}>
+                <EditIcon fontSize="small" />
+              </EditIconButton>
+            </Tooltip>
+            <Tooltip title="Delete">
+              <DeleteIconButton
+                size="small"
+                onClick={handleDelete}
+                sx={{ ml: 1 }}
+              >
+                <DeleteIcon fontSize="small" />
+              </DeleteIconButton>
+            </Tooltip>
+          </ActionsCell>
+        );
+      },
+    },
   ];
+  const [search, setSearch] = useState("");
+
+  const filterRows = () => {
+    if (search.length > 0) {
+      return rowData.filter((row) => {
+        return Object.values(row).some((value) => {
+          return String(value).toLowerCase().includes(search.toLowerCase());
+        });
+      });
+    }
+    return rowData;
+  };
+
+  const PAGE_SIZE = 4;
+  const navigate = useNavigate();
 
   return (
     <>
       <div>
+        <input
+          type="text"
+          placeholder="Search"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+        />
+        <ClientSideGrid
+          rowData={filterRows()}
+          columnDefs={columns}
+          paginationPageSize={10}
+          paginationPageSizeSelector={[5, 10, 20]}
+          height={603}
+          onRowClicked={(event) =>
+            navigate("/employeeDetails", { state: { row: event.data } })
+          }
+        />
         <ServerSideGrid
           key="messages-grid"
-          rows={rowData.slice((currentPage - 1) * 10, currentPage * 10)}
+          rows={rowData.slice(
+            (currentPage - 1) * PAGE_SIZE,
+            currentPage * PAGE_SIZE
+          )}
           totalRecords={rowData.length}
           currentPage={currentPage}
           loading={loading}
           onPageChange={setCurrentPage}
-          columns={columnDefs2}
-          pageSize={10}
+          columns={columns}
+          pageSize={PAGE_SIZE}
           defaultColDef={{
             filter: true,
             floatingFilter: true,
