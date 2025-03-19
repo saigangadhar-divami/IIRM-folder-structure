@@ -1,47 +1,36 @@
-import { ValidationRule } from "react-hook-form";
-
-// src/utils/validation.ts
-
-export const requiredField = (message: string): ValidationRule<boolean> => ({
-  value: true,
-  message: message,
+export const requiredField = (message: string) => ({
+  required: { value: true, message },
 });
 
 export const emailValidation = {
   pattern: {
-    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-    message: "Invalid email address",
+    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    message: "Enter a valid email address",
+  },
+};
+
+export const passwordValidation = {
+  minLength: {
+    value: 6,
+    message: "Password must be at least 6 characters long",
+  },
+  pattern: {
+    value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+    message:
+      "Password must contain at least one letter, one number, and one special character",
   },
 };
 
 export const numberValidation = {
   pattern: {
     value: /^[0-9]+$/,
-    message: "Please enter only numbers",
+    message: "Only numbers are allowed",
   },
 };
 
-export const phoneValidation = {
+export const alphabetValidation = {
   pattern: {
-    value: /^[0-9]{10}$/,
-    message: "Please enter a valid 10-digit phone number",
+    value: /^[A-Za-z]+$/,
+    message: "Only alphabets are allowed",
   },
 };
-
-export const passwordValidation = {
-  minLength: {
-    value: 8,
-    message: "Password must be at least 8 characters",
-  },
-  pattern: {
-    value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-    message: "Password must contain letters, numbers and special characters",
-  },
-};
-
-export const minLength = (min: number) => ({
-  minLength: {
-    value: min,
-    message: `Minimum length should be ${min}`,
-  },
-});

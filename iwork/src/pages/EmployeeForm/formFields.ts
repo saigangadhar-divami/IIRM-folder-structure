@@ -39,7 +39,7 @@ export const employeeTableFields: FormField[] = [
   {
     name: "mobile",
     label: "Mobile Number",
-    type: "text",
+    type: "number",
     required: true,
     validation: { required: "Mobile Number is required", pattern: /^[0-9]*$/ },
   },
@@ -99,21 +99,21 @@ export const employeeTableFields: FormField[] = [
   {
     name: "reportingUserId",
     label: "Reporting User ID",
-    type: "text",
+    type: "number",
     required: true,
     validation: { required: "Reporting User ID is required" },
   },
   {
     name: "iirmEmpId",
     label: "IIRM Employee ID",
-    type: "text",
+    type: "number",
     required: true,
     validation: { required: "IIRM Employee ID is required" },
   },
   {
     name: "iworkRoleId",
     label: "iWork Role ID",
-    type: "text",
+    type: "number",
     required: true,
     validation: { required: "iWork Role ID is required" },
   },

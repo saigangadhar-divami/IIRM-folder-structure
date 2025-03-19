@@ -1,5 +1,5 @@
 {
-  "jsx": "react-jsx", 
+  "jsx": "react-jsx",
   "moduleResolution": "node",
   "allowSyntheticDefaultImports": true,
   "esModuleInterop": true,
