@@ -2,6 +2,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ColDef, GridOptions } from "ag-grid-community";
+import { Loader } from "./styles";
 
 interface AGGridProps extends Partial<GridOptions> {
   rowData: any[];
@@ -9,8 +10,10 @@ interface AGGridProps extends Partial<GridOptions> {
   pagination?: boolean;
   paginationPageSize: number;
   paginationPageSizeSelector: number[];
-  height: number;
+  height?: number;
   width?: string | number;
+  gridRef?: any;
+  loading?: boolean;
 }
 
 const CommonAGGrid: React.FC<AGGridProps> = ({
@@ -19,8 +22,10 @@ const CommonAGGrid: React.FC<AGGridProps> = ({
   pagination = true,
   paginationPageSize,
   paginationPageSizeSelector,
-  height,
+  height= 601,
   width = "100%",
+  gridRef,
+  loading,
   ...rest
 }) => {
   return (
@@ -29,12 +34,16 @@ const CommonAGGrid: React.FC<AGGridProps> = ({
       className="ag-theme-alpine"
       style={{ height, width }}
     >
+       {loading && <Loader />}
       <AgGridReact
         rowData={rowData}
         columnDefs={columnDefs}
         pagination={pagination}
         paginationPageSize={paginationPageSize}
         paginationPageSizeSelector={paginationPageSizeSelector}
+        ref={gridRef}
+        rowHeight={50}
+        headerHeight={50}
         {...rest}
       />
     </div>

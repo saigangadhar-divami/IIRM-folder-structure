@@ -345,7 +345,7 @@ function EmployeeTable() {
           paginationPageSizeSelector={[5, 10, 20]}
           height={603}
           onRowClicked={(event) =>
-            navigate("/employeeDetails", { state: { row: event.data } })
+            navigate(`/employeeDetails/${event.data.id}`, { state: { row: event.data } })
           }
           onCellMouseOver={(event) => setHoveredRowId(event.node.rowIndex)}
           onCellMouseOut={() => setHoveredRowId(null)}

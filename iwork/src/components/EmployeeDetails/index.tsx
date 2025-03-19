@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useLocation } from "react-router-dom";
+import { Card, Container, DetailRow, Label, Title, Value } from "./styles";
 
 const EmployeeDetails = () => {
   const location = useLocation();
@@ -19,27 +20,17 @@ const EmployeeDetails = () => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom>
-        Employee Details
-      </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableBody>
-            {Object.entries(rowData).map(([key, value]) => (
-              <TableRow key={key}>
-                <TableCell
-                  sx={{ fontWeight: "bold", textTransform: "capitalize" }}
-                >
-                  {key}
-                </TableCell>
-                <TableCell>{value as React.ReactNode}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+    <Container>
+      <Card>
+        <Title>Employee Details</Title>
+        {Object.entries(rowData).map(([key, value]) => (
+          <DetailRow key={key}>
+            <Label>{key}:</Label>
+            <Value>{value as React.ReactNode}</Value>
+          </DetailRow>
+        ))}
+      </Card>
+    </Container>
   );
 };
 export default EmployeeDetails;
